@@ -282,11 +282,12 @@ function unused() {
      * @return {function(): string}
      */
     function splashFor(width, height, orientation, icon) {
+      const s = getComputedStyle(manifestEl);
       const ratio = window.devicePixelRatio;
       const ctx = contextForCanvas({width: width * ratio, height: height * ratio});
 
       ctx.scale(ratio, ratio);
-      ctx.fillStyle = backgroundColor;
+      ctx.fillStyle = s.getPropertyValue('--pwacompat-override-background') || backgroundColor;
       ctx.fillRect(0, 0, width, height);
       ctx.translate(width / 2, (height - splashIconPadding) / 2);
 
@@ -310,7 +311,6 @@ function unused() {
       ctx.font = `${defaultSplashTextSize}px ${defaultFontName}`;
 
       // Set the user-requested font; if it's invalid, the set will fail.
-      const s = getComputedStyle(manifestEl);
       ctx.font = s.getPropertyValue('--pwacompat-splash-font'); // blank for old browsers
 
       const title = manifest['name'] || manifest['short_name'] || document.title;
