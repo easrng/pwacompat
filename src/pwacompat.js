@@ -262,8 +262,9 @@ function unused() {
       return;  // the rest of this file is for Mobile Safari
     }
 
+    const manifestElStyle = getComputedStyle(manifestEl);
     const backgroundColor =
-        /** @type {string} */ (manifest['background_color']) || defaultSplashColor;
+        /** @type {string} */ manifestElStyle.getPropertyValue('--pwacompat-override-background') || (manifest['background_color']) || defaultSplashColor;
     const backgroundIsLight = shouldUseLightForeground(backgroundColor);
 
     // Add related iTunes app from manifest.
@@ -282,12 +283,11 @@ function unused() {
      * @return {function(): string}
      */
     function splashFor(width, height, orientation, icon) {
-      const s = getComputedStyle(manifestEl);
       const ratio = window.devicePixelRatio;
       const ctx = contextForCanvas({width: width * ratio, height: height * ratio});
 
       ctx.scale(ratio, ratio);
-      ctx.fillStyle = s.getPropertyValue('--pwacompat-override-background') || backgroundColor;
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, width, height);
       ctx.translate(width / 2, (height - splashIconPadding) / 2);
 
@@ -311,7 +311,7 @@ function unused() {
       ctx.font = `${defaultSplashTextSize}px ${defaultFontName}`;
 
       // Set the user-requested font; if it's invalid, the set will fail.
-      ctx.font = s.getPropertyValue('--pwacompat-splash-font'); // blank for old browsers
+      ctx.font = manifestElStyle.getPropertyValue('--pwacompat-splash-font'); // blank for old browsers
 
       const title = manifest['name'] || manifest['short_name'] || document.title;
       const measure = ctx.measureText(title);
